@@ -3,10 +3,9 @@ package websocket
 import (
 	"log"
 	"net/http"
+	"population-sim/pkg/environment"
 	"strings"
 	"time"
-
-	"population-sim/pkg/environment"
 
 	"github.com/gorilla/websocket"
 )
@@ -27,8 +26,14 @@ func (wsh webSocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		c.Close()
 	}()
 
+	mt, message, err := c.ReadMessage()
+	latestMessage := string(message)
+
 	for {
-		mt, message, err := c.ReadMessage()
+		go func() {
+			mt, message, err = c.ReadMessage()
+		}()
+
 		if err != nil {
 			log.Printf("Error %s when reading message from client", err)
 			return
@@ -40,29 +45,19 @@ func (wsh webSocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		log.Printf("Receive message %s", string(message))
-		if strings.Trim(string(message), "\n") != "start" {
-			err = c.WriteMessage(websocket.TextMessage, []byte("You did not say the magic word!"))
-			if err != nil {
-				log.Printf("Error %s when sending message to client", err)
-				return
-			}
-			continue
-		}
-		log.Println("start responding to client...")
-		i := 1
 
-		for {
-			// log.Print(wsh.environment.ToString())
-			response := wsh.environment.ToString()
-			err = c.WriteMessage(websocket.TextMessage, []byte(response))
-			if err != nil {
-				log.Printf("Error %s when sending message to client", err)
-				return
-			}
-			i = i + 1
-			time.Sleep(time.Millisecond * 50)
+		if strings.HasPrefix(string(message), "clicked") && string(message) != string(latestMessage) {
+			log.Print(string(message))
+			latestMessage = string(message)
 		}
+
+		response := wsh.environment.ToString()
+		err = c.WriteMessage(websocket.TextMessage, []byte(response))
+		if err != nil {
+			log.Printf("Error %s when sending message to client", err)
+			return
+		}
+		time.Sleep(time.Millisecond * 50)
 	}
 
 }
