@@ -13,7 +13,7 @@ import (
 
 type webSocketHandler struct {
 	upgrader    websocket.Upgrader
-	environment environment.Environment
+	environment *environment.Environment
 }
 
 func (wsh webSocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -53,9 +53,7 @@ func (wsh webSocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		i := 1
 
 		for {
-			wsh.environment.Tick()
 			// log.Print(wsh.environment.ToString())
-
 			response := wsh.environment.ToString()
 			err = c.WriteMessage(websocket.TextMessage, []byte(response))
 			if err != nil {
@@ -71,7 +69,7 @@ func (wsh webSocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func Serve(env environment.Environment) {
 	webSocketHandler := webSocketHandler{
-		environment: env,
+		environment: &env,
 		upgrader: websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool {
 				origin := r.Header.Get("Origin")

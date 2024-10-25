@@ -7,5 +7,6 @@ import (
 
 func main() {
 	env := environment.SetupEnvironment()
+	go env.Run()
 	websocket.Serve(env)
 }

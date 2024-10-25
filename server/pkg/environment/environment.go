@@ -4,6 +4,7 @@ import (
 	"fmt"
 	// "log"
 	"math/rand"
+	"time"
 )
 
 type Actor struct {
@@ -31,6 +32,13 @@ func SetupEnvironment() Environment {
 	}
 
 	return Environment{actors, height, width}
+}
+
+func (e Environment) Run() {
+	for {
+		e.Tick()
+		time.Sleep(time.Millisecond * 50)
+	}
 }
 
 func (e Environment) Tick() {
