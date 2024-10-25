@@ -65,7 +65,13 @@ func (wsh webSocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	webSocketHandler := webSocketHandler{
-		upgrader: websocket.Upgrader{},
+		upgrader: websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				origin := r.Header.Get("Origin")
+				log.Printf("Origin: %s", origin)
+				return origin == "http://127.0.0.1:8080" || origin == "http://localhost:5173"
+			},
+		},
 	}
 	http.Handle("/", webSocketHandler)
 	log.Print("Starting server...")
