@@ -1,9 +1,12 @@
-import { Sprite, useTick } from '@pixi/react';
-import { useState } from 'react';
+import { Sprite, useTick } from "@pixi/react";
+import { useState } from "react";
+import theMan from "./assets/theMan.png"
 
 export const Actor = () => {
-  const [position, setPosition] = useState({ x: 300, y: 150 });
-  const bunnyUrl = 'https://pixijs.io/pixi-react/img/bunny.png';
+  const [position, setPosition] = useState({
+    x: Math.floor(Math.random() * window.innerWidth),
+    y: Math.floor(Math.random() * window.innerHeight),
+  });
 
   useTick(() => {
     setPosition({
@@ -14,7 +17,7 @@ export const Actor = () => {
 
   return (
     <>
-      <Sprite image={bunnyUrl} x={position.x} y={position.y} />
+      <Sprite image={theMan} x={position.x} y={position.y} scale={{x: 0.1, y: 0.1}} />
     </>
   );
-}
+};
