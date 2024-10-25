@@ -1,4 +1,4 @@
-module github.com/golangbot/go-websocket
+module population-sim
 
 go 1.23.2
 

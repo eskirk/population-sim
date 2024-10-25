@@ -1,42 +1,14 @@
-import { Sprite, useTick } from "@pixi/react";
-import { useState } from "react";
+import { Sprite} from "@pixi/react";
 import theMan from "./assets/theMan.png";
 
-export const Actor = () => {
-  const [position, setPosition] = useState({
-    x: Math.floor(Math.random() * window.innerWidth),
-    y: Math.floor(Math.random() * window.innerHeight),
-  });
-
-  useTick(() => {
-    const setXY = (dimension: "x" | "y"): number => {
-      const distance = Math.floor(Math.random() * 5);
-      const direction = Math.floor(Math.random() > 0.5 ? 1 : -1);
-      const movement = distance * direction;
-
-      if (
-        position[dimension] + movement >
-          window[dimension == "x" ? "innerWidth" : "innerHeight"] ||
-        position[dimension] + movement < 0
-      ) {
-        return position[dimension] + -movement;
-      }
-
-      return position[dimension] + movement;
-    };
-
-    setPosition({
-      x: setXY("x"),
-      y: setXY("y"),
-    });
-  });
-
+export function Actor({name, x, y}: {name: string, x: number, y: number}) {
   return (
     <>
       <Sprite
+        key={name}
         image={theMan}
-        x={position.x}
-        y={position.y}
+        x={x}
+        y={y}
         scale={{ x: 0.1, y: 0.1 }}
       />
     </>

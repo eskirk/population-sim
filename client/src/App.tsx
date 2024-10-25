@@ -16,8 +16,6 @@ const App = () => {
 
   sendMessage("start");
 
-  console.log(lastMessage)
-
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
@@ -29,11 +27,23 @@ const App = () => {
   window.addEventListener("resize", handleResize);
 
   const actors = useMemo(
-    () =>
-      [...Array(Math.floor(Math.random() * 20))].map(() => {
-        return <Actor />;
-      }),
-    []
+    () => {
+      // console.log(lastMessage)
+      const data = lastMessage?.data?.split('\n')
+      // console.log(data)
+
+      if (!data) {
+        return []
+      }
+
+      return data.map((d: string) => {
+        const details = d && d.split(' ');
+
+        if (!details) return null;
+        return <Actor name={details[0]} x={Number(details[1])} y={Number(details[2])} />;
+      })
+    },
+    [lastMessage]
   );
 
   return (
