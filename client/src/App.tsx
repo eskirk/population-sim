@@ -1,3 +1,4 @@
+import "@pixi/events";
 import { useEffect, useMemo, useState } from "react";
 import { Actor } from "./Actor";
 import "./App.css";
@@ -18,11 +19,20 @@ const App = () => {
 
   // Run when the connection state (readyState) changes
   useEffect(() => {
-    console.log("Connection state changed")
+    console.log("Connection state changed");
     if (readyState === ReadyState.OPEN) {
-      sendMessage("start")
+      sendMessage("start");
     }
-  }, [readyState, sendMessage])
+  }, [readyState, sendMessage]);
+
+  // let timer: number;
+  // document.addEventListener("mousemove", (e) => {
+  //   clearTimeout(timer);
+  //   timer = setTimeout(() => {
+  //     sendMessage(`mouse ${e.pageX} ${e.pageY}`);
+  //     console.log(`mouse ${e.pageX} ${e.pageY}`);
+  //   }, 1000);
+  // });
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -62,7 +72,7 @@ const App = () => {
     <Stage
       width={windowWidth}
       height={windowHeight}
-      options={{ background: 0x1099bb }}
+      options={{ background: 0xc2b280 }}
     >
       {...actors}
     </Stage>

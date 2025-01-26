@@ -8,13 +8,12 @@ type Actor struct {
 	name      string
 	positionX int32
 	positionY int32
+	grabbed   bool
 }
 
-func (a Actor) move(e Environment) Actor {
+func (a *Actor) move(e Environment) {
 	a.positionX = a.moveDirection(e, "x")
 	a.positionY = a.moveDirection(e, "y")
-
-	return a
 }
 
 func (a Actor) moveDirection(environment Environment, dimension string) int32 {
@@ -48,4 +47,8 @@ func (a Actor) moveDirection(environment Environment, dimension string) int32 {
 	}
 
 	return 0
+}
+
+func (a Actor) ToString() string {
+	return a.name
 }

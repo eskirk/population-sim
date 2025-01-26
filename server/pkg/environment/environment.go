@@ -2,8 +2,9 @@ package environment
 
 import (
 	"fmt"
-	// "log"
+	"log"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -22,7 +23,7 @@ func SetupEnvironment() Environment {
 
 	for i := 0; i < int(size); i++ {
 		// log.Print("appending actor")
-		actors = append(actors, Actor{fmt.Sprintf("%d", i), rand.Int31n(width), rand.Int31n(height)})
+		actors = append(actors, Actor{fmt.Sprintf("%d", i), rand.Int31n(width), rand.Int31n(height), false})
 	}
 
 	return Environment{actors, height, width}
@@ -41,8 +42,29 @@ func (e Environment) Tick() {
 	for i := range e.actors {
 		// log.Print("ticking")
 
-		e.actors[i] = e.actors[i].move(e)
+		if e.actors[i].grabbed {
+			continue
+		}
+
+		e.actors[i].move(e)
 	}
+}
+
+func (e Environment) getActor(name string) *Actor {
+	ndx, err := strconv.Atoi(name)
+
+	if err != nil {
+		log.Print("error converting name to int")
+	}
+
+	return &e.actors[ndx]
+}
+
+func (e Environment) GrabActor(name string) {
+	a := e.getActor(name)
+	a.grabbed = !a.grabbed
+
+	log.Print("grabbed actor " + a.ToString())
 }
 
 func (e Environment) ToString() string {

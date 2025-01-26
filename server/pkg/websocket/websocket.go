@@ -26,29 +26,43 @@ func (wsh webSocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		c.Close()
 	}()
 
-	mt, message, err := c.ReadMessage()
-	latestMessage := string(message)
+	_, message, err := c.ReadMessage()
+	newMessage := true
 
 	for {
 		go func() {
-			mt, message, err = c.ReadMessage()
+			_, message, err = c.ReadMessage()
+
+			if err != nil {
+				log.Printf("Error %s when reading message from client", err)
+			}
+
+			newMessage = true
 		}()
 
 		if err != nil {
 			log.Printf("Error %s when reading message from client", err)
 			return
 		}
-		if mt == websocket.BinaryMessage {
-			err = c.WriteMessage(websocket.TextMessage, []byte("server doesn't support binary messages"))
-			if err != nil {
-				log.Printf("Error %s when sending message to client", err)
-			}
-			return
-		}
 
-		if strings.HasPrefix(string(message), "clicked") && string(message) != string(latestMessage) {
-			log.Print(string(message))
-			latestMessage = string(message)
+		if newMessage {
+			if strings.HasPrefix(string(message), "grabbed") {
+				log.Print(string(message))
+
+				name := strings.Split(string(message), " ")[1]
+				wsh.environment.GrabActor(name)
+			}
+
+			if strings.HasPrefix(string(message), "mouse") {
+				log.Print(string(message))
+
+				x := strings.Split(string(message), " ")[1]
+				y := strings.Split(string(message), " ")[2]
+
+				log.Printf("mouse %s %s", x, y)
+			}
+
+			newMessage = false
 		}
 
 		response := wsh.environment.ToString()
