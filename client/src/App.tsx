@@ -45,23 +45,24 @@ const App = () => {
   window.addEventListener("resize", handleResize);
 
   const actors = useMemo(() => {
-    // console.log(lastMessage)
-    const data = lastMessage?.data?.split("\n");
-    // console.log(data)
+    let data;
+
+    try {
+      data = JSON.parse(lastMessage?.data);
+    } catch (e) {
+      console.log(e);
+    }
 
     if (!data) {
       return [];
     }
 
-    return data.map((d: string) => {
-      const details = d && d.split(" ");
-
-      if (!details) return null;
+    return data.map((d: Record<string, string>) => {
       return (
         <Actor
-          name={details[0]}
-          x={Number(details[1])}
-          y={Number(details[2])}
+          name={d.name}
+          x={Number(d.positionX)}
+          y={Number(d.positionY)}
           sendMessage={sendMessage}
         />
       );

@@ -83,7 +83,7 @@ func Serve(env environment.Environment) {
 			CheckOrigin: func(r *http.Request) bool {
 				origin := r.Header.Get("Origin")
 				log.Printf("Origin: %s", origin)
-				return origin == "http://127.0.0.1:8080" || origin == "http://localhost:5173"
+				return len(origin) > 0
 			},
 		},
 	}

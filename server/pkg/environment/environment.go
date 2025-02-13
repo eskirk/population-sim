@@ -1,6 +1,7 @@
 package environment
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
@@ -68,13 +69,26 @@ func (e Environment) GrabActor(name string) {
 }
 
 func (e Environment) ToString() string {
-	output := ""
+	state := e.GetState()
+
+	log.Print("actors: " + string(state))
+
+	return string(state)
+}
+
+func (e Environment) GetState() []byte {
+	output := make([]interface{}, 0, len(e.actors))
 
 	for _, actor := range e.actors {
-		// log.Printf("Actor %s x: %d y %d \n", actor.name, actor.positionX, actor.positionY)
-
-		output = output + fmt.Sprintf("%s %d %d\n", actor.name, actor.positionX, actor.positionY)
+		output = append(output, map[string]interface{}{
+			"name":      actor.name,
+			"positionX": actor.positionX,
+			"positionY": actor.positionY,
+			"grabbed":   actor.grabbed,
+		})
 	}
 
-	return output
+	out, _ := json.Marshal(output)
+
+	return out
 }
