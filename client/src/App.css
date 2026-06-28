@@ -1,3 +1,14 @@
 #root {
-  max-width: auto;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* prevent the browser from starting a native image-drag of the webgl canvas
+   (which otherwise shows a ghost image under the cursor) and keep touch
+   gestures going to OrbitControls. */
+#root canvas {
+  -webkit-user-drag: none;
+  user-select: none;
+  touch-action: none;
 }

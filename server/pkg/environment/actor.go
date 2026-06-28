@@ -11,12 +11,12 @@ type Actor struct {
 	grabbed   bool
 }
 
-func (a *Actor) move(e Environment) {
+func (a *Actor) move(e *Environment) {
 	a.positionX = a.moveDirection(e, "x")
 	a.positionY = a.moveDirection(e, "y")
 }
 
-func (a Actor) moveDirection(environment Environment, dimension string) int32 {
+func (a Actor) moveDirection(environment *Environment, dimension string) int32 {
 	distance := rand.Int31n(5)
 	var direction int32
 
@@ -28,10 +28,8 @@ func (a Actor) moveDirection(environment Environment, dimension string) int32 {
 
 	movement := distance * direction
 
-	// log.Printf("actor %s dimension %s movement %d env %d %d", a.name, dimension, movement, environment.width, environment.height)
-
 	if dimension == "x" {
-		if a.positionX+movement > environment.height || a.positionX+movement < 0 {
+		if a.positionX+movement > environment.width || a.positionX+movement < 0 {
 			return a.positionX - movement
 		}
 
@@ -39,7 +37,7 @@ func (a Actor) moveDirection(environment Environment, dimension string) int32 {
 	}
 
 	if dimension == "y" {
-		if a.positionY+movement > environment.width || a.positionY+movement < 0 {
+		if a.positionY+movement > environment.height || a.positionY+movement < 0 {
 			return a.positionY - movement
 		}
 
