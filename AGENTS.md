@@ -17,6 +17,9 @@
   WebSocket every ~50ms. `CheckOrigin` requires a non-empty `Origin` header, so plain HTTP
   GETs without an `Origin` are rejected — connect with a real WebSocket client/browser.
 - Deps: `go mod download`. Vet/build: `go vet ./...`, `go build ./...`.
+- Known pre-existing bug: when a client disconnects abruptly (e.g. closing the browser tab),
+  the server can `panic: repeated read on failed websocket connection` and exit. Just restart
+  `go run main.go` if it dies during testing.
 
 ### Client (Vite)
 - Package manager is **yarn**. Both `yarn.lock` and `package-lock.json` are committed, but
