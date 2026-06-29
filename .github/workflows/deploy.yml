@@ -1,0 +1,50 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+# builds and deploys both halves of the population sim over SSH, reusing the
+# same droplet + secrets as the elliotkirk deploy:
+#   - client: vite static build served by nginx at sim.elliotkirk.com
+#   - server: go binary run as a systemd --user service on localhost:8080,
+#     reverse-proxied (wss) by nginx. see deploy/README.md for one-time setup.
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy population-sim
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          key: ${{ secrets.SSH_KEY }}
+          username: ${{ secrets.SSH_USERNAME }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            set -e
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            export PATH=$PATH:/usr/local/go/bin
+
+            cd ~/population-sim
+            git fetch origin main
+            git reset --hard FETCH_HEAD
+
+            # build the static client; VITE_WS_URL is baked in at build time.
+            nvm install 24
+            nvm use 24
+            corepack enable
+            cd client
+            yarn install --frozen-lockfile
+            VITE_WS_URL="wss://sim.elliotkirk.com/ws" yarn build
+            cd ..
+
+            # build the go server binary.
+            cd server
+            go build -o ../bin/population-sim .
+            cd ..
+
+            # restart the user service running the server binary.
+            systemctl --user restart population-sim
+
+            echo "Deployed population-sim"
