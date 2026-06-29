@@ -1,0 +1,3 @@
+# compiled go server binary (produced by the deploy build step)
+/bin/
+.DS_Store

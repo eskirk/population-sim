@@ -1,0 +1,18 @@
+# systemd --user unit for the population-sim go server.
+# install to ~/.config/systemd/user/population-sim.service (see deploy/README.md).
+
+[Unit]
+Description=Population Sim WebSocket server
+After=network.target
+
+[Service]
+# ADDR keeps the server bound to localhost; nginx terminates TLS and proxies to
+# it. ALLOWED_ORIGINS restricts which sites may open a websocket.
+Environment=ADDR=localhost:8080
+Environment=ALLOWED_ORIGINS=https://sim.elliotkirk.com
+ExecStart=%h/population-sim/bin/population-sim
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target
